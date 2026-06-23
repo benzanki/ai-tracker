@@ -3,7 +3,7 @@ import type { Provider, ProviderResult, RawCitation } from "../types";
 
 export class ClaudeProvider implements Provider {
   readonly name = "claude";
-  readonly model = "claude-opus-4-8";
+  readonly model = "claude-sonnet-4-6";
 
   private client: Anthropic;
 
@@ -16,7 +16,7 @@ export class ClaudeProvider implements Provider {
       model: this.model,
       max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
-      tools: [{ type: "web_search_20250305" as const, name: "web_search" }],
+      tools: [{ type: "web_search_20250305" as const, name: "web_search", max_uses: 1 }],
     });
 
     let answer_text = "";
