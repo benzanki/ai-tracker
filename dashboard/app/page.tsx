@@ -15,6 +15,7 @@ interface SearchParams {
   entityId?: string;
   dateFrom?: string;
   dateTo?: string;
+  [key: string]: string | undefined;
 }
 
 export default async function HomePage({
