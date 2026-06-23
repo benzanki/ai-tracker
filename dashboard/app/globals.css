@@ -1,0 +1,145 @@
+/* Minimal base styles — structured for a warm paper-and-cream palette
+   with terracotta accent and Fraunces + Hanken Grotesk typography.
+   Design layer applies here without refactoring component markup. */
+
+:root {
+  --color-bg: #faf7f2;
+  --color-surface: #f3ede3;
+  --color-border: #e0d8cc;
+  --color-text: #2c2820;
+  --color-text-muted: #7a6f63;
+  --color-accent: #c1604a;
+  --color-accent-light: #e8c4bc;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Hanken Grotesk", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+header nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+header nav strong {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+
+header nav span {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+main {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+tr:hover td {
+  background: var(--color-surface);
+}
+
+select,
+input[type="date"] {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 13px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-owned {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+}
+
+.badge-competitor {
+  background: var(--color-border);
+  color: var(--color-text-muted);
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text);
+}
+
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+}
+
+.filters-bar label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-muted);
+}

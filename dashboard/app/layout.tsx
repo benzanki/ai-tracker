@@ -1,0 +1,27 @@
+import type { Metadata } from "next";
+import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "AI Tracker",
+  description: "AI answer engine citation monitoring",
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <header>
+          <nav>
+            <strong>AI Tracker</strong>
+            <span>Citation &amp; Mention Monitor</span>
+          </nav>
+        </header>
+        <main>{children}</main>
+      </body>
+    </html>
+  );
+}

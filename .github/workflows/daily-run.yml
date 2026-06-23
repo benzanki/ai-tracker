@@ -1,0 +1,33 @@
+name: Daily AI Prompt Run
+
+on:
+  schedule:
+    # Runs at 02:00 UTC daily. GitHub cron is approximate — may be delayed by up to ~1 hour.
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  run-prompts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: runner/package-lock.json
+
+      - name: Install dependencies
+        working-directory: runner
+        run: npm ci
+
+      - name: Run prompt batch
+        working-directory: runner
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: npm start
