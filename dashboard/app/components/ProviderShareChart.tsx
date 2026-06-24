@@ -59,7 +59,7 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
     params.delete("psEntityIds");
     params.set("psOwnership", key === "all" ? "" : key);
     if (!params.get("psOwnership")) params.delete("psOwnership");
-    router.push(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`, { scroll: false });
   }
 
   function toggleEntity(id: string) {
@@ -73,14 +73,14 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
     } else {
       params.delete("psEntityIds");
     }
-    router.push(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`, { scroll: false });
   }
 
   function switchMode(newMode: "group" | "entity") {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("psEntityIds");
     params.delete("psOwnership");
-    router.push(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`, { scroll: false });
   }
 
   // Build chart data

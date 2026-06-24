@@ -67,6 +67,16 @@ export default async function HomePage({
 
       <div className="section">
         <h2 className="section-title">
+          Citation share by LLM provider
+          <InfoTooltip text="Of all citations for the selected entities or ownership group, what share came from each LLM provider on a given day. Switch between 'By ownership' to compare groups and 'By entity' to drill into specific sites." />
+        </h2>
+        <Suspense fallback={<p className="empty">Loading…</p>}>
+          <ProviderShareServer filters={filters} entityIds={psEntityIds} psOwnership={psOwnership} />
+        </Suspense>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">
           Entity metrics
           <InfoTooltip text="Citation rate = % of prompts where the entity was linked as a source. Mention rate = % of prompts where it was named in the answer content. Mentioned & cited = % where both occurred (the strongest outcome). Share (tracked) = entity's citations as a % of all tracked-entity citations. Share (all) = as a % of every citation including untracked sites. Avg position = mean rank in the citation list (lower is better)." />
         </h2>
@@ -112,16 +122,6 @@ export default async function HomePage({
         </h2>
         <Suspense fallback={<p className="empty">Loading…</p>}>
           <TypeShareView filters={filters} />
-        </Suspense>
-      </div>
-
-      <div className="section">
-        <h2 className="section-title">
-          Citation share by LLM provider
-          <InfoTooltip text="Of all citations for the selected entities or ownership group, what share came from each LLM provider on a given day. Switch between 'By ownership' to compare groups and 'By entity' to drill into specific sites." />
-        </h2>
-        <Suspense fallback={<p className="empty">Loading…</p>}>
-          <ProviderShareServer filters={filters} entityIds={psEntityIds} psOwnership={psOwnership} />
         </Suspense>
       </div>
 
