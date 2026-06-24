@@ -17,7 +17,8 @@ export default function RootLayout({
         <header>
           <nav>
             <strong>AI Tracker</strong>
-            <span>Citation &amp; Mention Monitor</span>
+            <a href="/" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Dashboard</a>
+            <a href="/prompts" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Prompts</a>
           </nav>
         </header>
         <main>{children}</main>
