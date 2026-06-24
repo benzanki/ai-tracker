@@ -90,27 +90,38 @@ export function CitationRateChart({ rows }: Props) {
           ))}
         </div>
 
-        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-          {allEntities.map((label, i) => {
-            const active = selectedEntities.includes(label);
-            return (
-              <button
-                key={label}
-                onClick={() => toggleEntity(label)}
-                style={{
-                  padding: "0.2rem 0.6rem",
-                  fontSize: 11,
-                  border: `1px solid ${active ? COLORS[i % COLORS.length] : "var(--color-border)"}`,
-                  borderRadius: 3,
-                  cursor: "pointer",
-                  background: active ? COLORS[i % COLORS.length] : "var(--color-surface)",
-                  color: active ? "#fff" : "var(--color-text-muted)",
-                }}
-              >
-                {label}
-              </button>
-            );
-          })}
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
+          {[
+            { group: "Owned", entities: allEntities.filter((l) => rows.find((r) => r.label === l)?.ownership === "owned") },
+            { group: "Competitors", entities: allEntities.filter((l) => rows.find((r) => r.label === l)?.ownership !== "owned") },
+          ].map(({ group, entities }) =>
+            entities.length === 0 ? null : (
+              <div key={group} style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
+                <span style={{ fontSize: 11, color: "var(--color-text-muted)", minWidth: 72 }}>{group}</span>
+                {entities.map((label) => {
+                  const i = allEntities.indexOf(label);
+                  const active = selectedEntities.includes(label);
+                  return (
+                    <button
+                      key={label}
+                      onClick={() => toggleEntity(label)}
+                      style={{
+                        padding: "0.2rem 0.6rem",
+                        fontSize: 11,
+                        border: `1px solid ${active ? COLORS[i % COLORS.length] : "var(--color-border)"}`,
+                        borderRadius: 3,
+                        cursor: "pointer",
+                        background: active ? COLORS[i % COLORS.length] : "var(--color-surface)",
+                        color: active ? "#fff" : "var(--color-text-muted)",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            )
+          )}
         </div>
       </div>
 
