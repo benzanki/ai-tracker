@@ -25,6 +25,19 @@ export async function TrendCharts({ filters }: Props) {
     p_date_to: filters.dateTo ?? null,
   });
 
+  // Build a date → label → citation_rate map for owned entities
+  const ownedShareMap = new Map<string, Record<string, number>>();
+  for (const row of (citationRows as Array<{
+    date: string;
+    label: string;
+    ownership: string;
+    citation_rate: number;
+  }> ?? [])) {
+    if (row.ownership !== "owned") continue;
+    if (!ownedShareMap.has(row.date)) ownedShareMap.set(row.date, {});
+    ownedShareMap.get(row.date)![row.label] = Number(row.citation_rate);
+  }
+
   const typeMap = new Map<string, Record<string, number>>();
   for (const row of (typeRows as Array<{
     date: string;
@@ -37,7 +50,11 @@ export async function TrendCharts({ filters }: Props) {
 
   const typeChartData = [...typeMap.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, values]) => ({ date, ...values }));
+    .map(([date, values]) => ({
+      date,
+      ...values,
+      ...(ownedShareMap.get(date) ?? {}),
+    }));
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
@@ -53,7 +70,11 @@ export async function TrendCharts({ filters }: Props) {
           Lender vs aggregator citation share
           <InfoTooltip text="Share of all tracked-entity citations going to lenders vs aggregators, by day." />
         </h2>
-        <TypeShareChart data={typeChartData} />
+        <TypeShareChart data={typeChartData} ownedLabels={[...new Set(
+          (citationRows as Array<{ label: string; ownership: string }> ?? [])
+            .filter(r => r.ownership === "owned")
+            .map(r => r.label)
+        )]} />
       </div>
     </div>
   );
