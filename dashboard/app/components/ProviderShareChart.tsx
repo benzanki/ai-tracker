@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import {
   BarChart,
   Bar,
@@ -45,43 +45,28 @@ const OWNERSHIP_GROUPS = [
 ];
 
 export function ProviderShareChart({ rows, entities }: Props) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const mode = searchParams.get("psMode") === "entity" ? "entity" : "group";
-  const currentEntityIds = (searchParams.get("psEntityIds") ?? "").split(",").filter(Boolean);
-  const currentOwnership = searchParams.get("psOwnership") ?? "";
+  const [mode, setMode] = useState<"group" | "entity">("group");
+  const [currentOwnership, setCurrentOwnership] = useState("");
+  const [currentEntityIds, setCurrentEntityIds] = useState<string[]>([]);
 
   const ownedEntities = entities.filter((e) => e.ownership === "owned");
   const competitorEntities = entities.filter((e) => e.ownership === "competitor");
 
   function setGroup(key: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("psEntityIds");
-    params.delete("psMode");
-    if (key) params.set("psOwnership", key);
-    else params.delete("psOwnership");
-    router.replace(`?${params.toString()}`, { scroll: false });
+    setCurrentOwnership(key);
+    setMode("group");
   }
 
   function toggleEntity(id: string) {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("psOwnership");
-    params.set("psMode", "entity");
-    const next = currentEntityIds.includes(id)
-      ? currentEntityIds.filter((e) => e !== id)
-      : [...currentEntityIds, id];
-    if (next.length > 0) params.set("psEntityIds", next.join(","));
-    else params.delete("psEntityIds");
-    router.replace(`?${params.toString()}`, { scroll: false });
+    setCurrentEntityIds((prev) =>
+      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]
+    );
   }
 
   function switchMode(newMode: "group" | "entity") {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("psEntityIds");
-    params.delete("psOwnership");
-    if (newMode === "entity") params.set("psMode", "entity");
-    else params.delete("psMode");
-    router.replace(`?${params.toString()}`, { scroll: false });
+    setMode(newMode);
+    setCurrentEntityIds([]);
+    setCurrentOwnership("");
   }
 
   // Filter rows client-side based on current selection
