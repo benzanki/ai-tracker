@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -11,57 +12,135 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-interface DataPoint {
+interface EntityRow {
   date: string;
-  [entity: string]: string | number;
+  label: string;
+  ownership: string;
+  citation_rate: number;
+  mention_rate: number;
+  mentioned_and_cited_rate: number;
 }
 
 interface Props {
-  data: DataPoint[];
-  entities: string[];
+  rows: EntityRow[];
 }
 
 const COLORS = [
-  "#c1604a",
-  "#4a7fc1",
-  "#4ac17f",
-  "#c1a84a",
-  "#9b4ac1",
-  "#4ac1b8",
+  "#c1604a", "#4a7fc1", "#4ac17f", "#c1a84a", "#9b4ac1", "#4ac1b8",
+  "#c14a8a", "#7fc14a", "#4a8ac1", "#c18a4a",
 ];
 
-export function CitationRateChart({ data, entities }: Props) {
-  if (!data || data.length === 0) {
+const METRICS = [
+  { key: "citation_rate", label: "Citation rate" },
+  { key: "mention_rate", label: "Mention rate" },
+  { key: "mentioned_and_cited_rate", label: "Mentioned & cited" },
+] as const;
+
+type MetricKey = (typeof METRICS)[number]["key"];
+
+export function CitationRateChart({ rows }: Props) {
+  const allEntities = [...new Set(rows.map((r) => r.label))].sort();
+  const [selectedEntities, setSelectedEntities] = useState<string[]>(
+    allEntities.filter((_, i) => i < 5) // default to first 5
+  );
+  const [metric, setMetric] = useState<MetricKey>("citation_rate");
+
+  if (!rows || rows.length === 0) {
     return <p className="empty">No trend data yet.</p>;
   }
 
+  // Build chart data: [{ date, 'Canstar': 80, 'Finder': 65, ... }]
+  const dateMap = new Map<string, Record<string, number>>();
+  for (const row of rows) {
+    if (!selectedEntities.includes(row.label)) continue;
+    if (!dateMap.has(row.date)) dateMap.set(row.date, {});
+    dateMap.get(row.date)![row.label] = Number(row[metric]);
+  }
+  const chartData = [...dateMap.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, values]) => ({ date, ...values }));
+
+  function toggleEntity(label: string) {
+    setSelectedEntities((prev) =>
+      prev.includes(label) ? prev.filter((e) => e !== label) : [...prev, label]
+    );
+  }
+
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
-        <XAxis
-          dataKey="date"
-          tick={{ fontSize: 11, fill: "var(--color-text-muted)" }}
-        />
-        <YAxis
-          tickFormatter={(v) => `${v}%`}
-          tick={{ fontSize: 11, fill: "var(--color-text-muted)" }}
-          domain={[0, 100]}
-        />
-        <Tooltip formatter={(v) => `${v}%`} />
-        <Legend wrapperStyle={{ fontSize: 12 }} />
-        {entities.map((entity, i) => (
-          <Line
-            key={entity}
-            type="monotone"
-            dataKey={entity}
-            stroke={COLORS[i % COLORS.length]}
-            strokeWidth={2}
-            dot={{ r: 3 }}
-            activeDot={{ r: 5 }}
+    <div>
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          {METRICS.map((m) => (
+            <button
+              key={m.key}
+              onClick={() => setMetric(m.key)}
+              style={{
+                padding: "0.25rem 0.75rem",
+                fontSize: 12,
+                border: "1px solid var(--color-border)",
+                borderRadius: 4,
+                cursor: "pointer",
+                background: metric === m.key ? "var(--color-accent)" : "var(--color-surface)",
+                color: metric === m.key ? "#fff" : "var(--color-text)",
+                fontWeight: metric === m.key ? 600 : 400,
+              }}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
+          {allEntities.map((label, i) => {
+            const active = selectedEntities.includes(label);
+            return (
+              <button
+                key={label}
+                onClick={() => toggleEntity(label)}
+                style={{
+                  padding: "0.2rem 0.6rem",
+                  fontSize: 11,
+                  border: `1px solid ${active ? COLORS[i % COLORS.length] : "var(--color-border)"}`,
+                  borderRadius: 3,
+                  cursor: "pointer",
+                  background: active ? COLORS[i % COLORS.length] : "var(--color-surface)",
+                  color: active ? "#fff" : "var(--color-text-muted)",
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+          <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--color-text-muted)" }} />
+          <YAxis
+            tickFormatter={(v) => `${v}%`}
+            tick={{ fontSize: 11, fill: "var(--color-text-muted)" }}
+            domain={[0, 100]}
           />
-        ))}
-      </LineChart>
-    </ResponsiveContainer>
+          <Tooltip formatter={(v) => `${v}%`} />
+          <Legend wrapperStyle={{ fontSize: 12 }} />
+          {selectedEntities.map((label, i) => {
+            const colorIdx = allEntities.indexOf(label);
+            return (
+              <Line
+                key={label}
+                type="monotone"
+                dataKey={label}
+                stroke={COLORS[colorIdx % COLORS.length]}
+                strokeWidth={2}
+                dot={{ r: 3 }}
+                activeDot={{ r: 5 }}
+              />
+            );
+          })}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
   );
 }
