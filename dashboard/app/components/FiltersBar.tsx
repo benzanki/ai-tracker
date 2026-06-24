@@ -6,11 +6,12 @@ import { useCallback } from "react";
 interface Props {
   providers: string[];
   verticals: string[];
+  tags: string[];
   entities: Array<{ id: string; label: string; ownership: string }>;
   current: Record<string, string | undefined>;
 }
 
-export function FiltersBar({ providers, verticals, entities, current }: Props) {
+export function FiltersBar({ providers, verticals, tags, entities, current }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -54,6 +55,21 @@ export function FiltersBar({ providers, verticals, entities, current }: Props) {
           {verticals.map((v) => (
             <option key={v} value={v}>
               {v.replace(/_/g, " ")}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label>
+        Tag
+        <select
+          value={current.tag ?? ""}
+          onChange={(e) => update("tag", e.target.value)}
+        >
+          <option value="">All</option>
+          {tags.map((t) => (
+            <option key={t} value={t}>
+              {t.replace(/_/g, " ")}
             </option>
           ))}
         </select>

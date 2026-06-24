@@ -3,6 +3,7 @@ import { supabase } from "./supabase";
 export interface Filters {
   provider?: string;
   vertical?: string;
+  tag?: string;
   ownership?: "owned" | "competitor";
   type?: "lender" | "aggregator" | "other";
   entityId?: string;
@@ -20,6 +21,7 @@ export async function getEntityMetrics(filters: Filters) {
   let query = supabase.rpc("entity_metrics", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_ownership: filters.ownership ?? null,
     p_type: filters.type ?? null,
     p_entity_id: filters.entityId ?? null,
@@ -40,6 +42,7 @@ export async function getPortfolioCoverage(filters: Filters) {
   const { data, error } = await supabase.rpc("portfolio_coverage", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });
@@ -59,6 +62,7 @@ export async function getGapAnalysis(filters: Filters) {
   const { data, error } = await supabase.rpc("gap_analysis", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });
@@ -79,6 +83,7 @@ export async function getCannibalisation(filters: Filters) {
   const { data, error } = await supabase.rpc("cannibalisation", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });
@@ -99,6 +104,7 @@ export async function getPageCitationRates(filters: Filters) {
   const { data, error } = await supabase.rpc("page_citation_rates", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });
@@ -121,6 +127,7 @@ export async function getTypeShareOverTime(filters: Filters) {
   const { data, error } = await supabase.rpc("type_share_over_time", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });
@@ -153,6 +160,13 @@ export async function getVerticals() {
     .order("vertical");
   if (error) throw error;
   return [...new Set((data ?? []).map((r: { vertical: string }) => r.vertical))];
+}
+
+export async function getTags() {
+  const { data, error } = await supabase.from("prompts").select("tags");
+  if (error) throw error;
+  const all = (data ?? []).flatMap((r: { tags: string[] }) => r.tags);
+  return [...new Set(all)].sort();
 }
 
 export async function getEntities(ownership?: string) {

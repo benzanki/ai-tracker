@@ -6,11 +6,12 @@ import { TypeShareView } from "./components/TypeShareView";
 import { PageCitationsView } from "./components/PageCitationsView";
 import { TrendCharts } from "./components/TrendCharts";
 import { FiltersBar } from "./components/FiltersBar";
-import { getProviders, getVerticals, getEntities } from "./lib/queries";
+import { getProviders, getVerticals, getEntities, getTags } from "./lib/queries";
 
 interface SearchParams {
   provider?: string;
   vertical?: string;
+  tag?: string;
   ownership?: string;
   type?: string;
   entityId?: string;
@@ -26,15 +27,17 @@ export default async function HomePage({
 }) {
   const params = await searchParams;
 
-  const [providers, verticals, entities] = await Promise.all([
+  const [providers, verticals, entities, tags] = await Promise.all([
     getProviders(),
     getVerticals(),
     getEntities(),
+    getTags(),
   ]);
 
   const filters = {
     provider: params.provider,
     vertical: params.vertical,
+    tag: params.tag,
     ownership: params.ownership as "owned" | "competitor" | undefined,
     type: params.type as "lender" | "aggregator" | "other" | undefined,
     entityId: params.entityId,
@@ -47,6 +50,7 @@ export default async function HomePage({
       <FiltersBar
         providers={providers as string[]}
         verticals={verticals as string[]}
+        tags={tags as string[]}
         entities={entities as Array<{ id: string; label: string; ownership: string }>}
         current={params}
       />
