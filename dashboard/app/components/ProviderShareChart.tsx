@@ -15,8 +15,9 @@ import {
 interface Row {
   date: string;
   provider: string;
+  entity_id: string;
+  ownership: string;
   citation_count: number;
-  share: number;
 }
 
 interface Entity {
@@ -34,13 +35,13 @@ interface Props {
 
 const PROVIDER_COLORS: Record<string, string> = {
   claude: "#c1604a",
-  openai: "#4a7fc1",
+  chatgpt: "#4a7fc1",
   perplexity: "#4ac17f",
   gemini: "#c1a84a",
 };
 
 const OWNERSHIP_GROUPS = [
-  { key: "all", label: "All tracked" },
+  { key: "", label: "All tracked" },
   { key: "owned", label: "Owned" },
   { key: "competitor", label: "Competitors" },
 ];
@@ -48,17 +49,17 @@ const OWNERSHIP_GROUPS = [
 export function ProviderShareChart({ rows, entities, currentEntityIds, currentOwnership }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const mode = searchParams.get("psMode") === "entity" ? "entity" : "group";
 
-  const mode = (searchParams.get("psMode") === "entity") ? "entity" : "group";
-  const providers = [...new Set(rows.map((r) => r.provider))].sort();
   const ownedEntities = entities.filter((e) => e.ownership === "owned");
   const competitorEntities = entities.filter((e) => e.ownership === "competitor");
 
   function setGroup(key: string) {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("psEntityIds");
-    params.set("psOwnership", key === "all" ? "" : key);
-    if (!params.get("psOwnership")) params.delete("psOwnership");
+    params.delete("psMode");
+    if (key) params.set("psOwnership", key);
+    else params.delete("psOwnership");
     router.replace(`?${params.toString()}`, { scroll: false });
   }
 
@@ -69,11 +70,8 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
     const next = currentEntityIds.includes(id)
       ? currentEntityIds.filter((e) => e !== id)
       : [...currentEntityIds, id];
-    if (next.length > 0) {
-      params.set("psEntityIds", next.join(","));
-    } else {
-      params.delete("psEntityIds");
-    }
+    if (next.length > 0) params.set("psEntityIds", next.join(","));
+    else params.delete("psEntityIds");
     router.replace(`?${params.toString()}`, { scroll: false });
   }
 
@@ -81,23 +79,40 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
     const params = new URLSearchParams(searchParams.toString());
     params.delete("psEntityIds");
     params.delete("psOwnership");
-    if (newMode === "entity") {
-      params.set("psMode", "entity");
-    } else {
-      params.delete("psMode");
-    }
+    if (newMode === "entity") params.set("psMode", "entity");
+    else params.delete("psMode");
     router.replace(`?${params.toString()}`, { scroll: false });
   }
 
-  // Build chart data
-  const dateMap = new Map<string, Record<string, number>>();
-  for (const row of rows) {
-    if (!dateMap.has(row.date)) dateMap.set(row.date, {});
-    dateMap.get(row.date)![row.provider] = Number(row.share);
+  // Filter rows client-side based on current selection
+  const filteredRows = rows.filter((r) => {
+    if (mode === "entity" && currentEntityIds.length > 0) {
+      return currentEntityIds.includes(r.entity_id);
+    }
+    if (currentOwnership) return r.ownership === currentOwnership;
+    return true; // all tracked
+  });
+
+  // Aggregate by date + provider, calculate share
+  const dateProviderMap = new Map<string, Map<string, number>>();
+  for (const row of filteredRows) {
+    if (!dateProviderMap.has(row.date)) dateProviderMap.set(row.date, new Map());
+    const provMap = dateProviderMap.get(row.date)!;
+    provMap.set(row.provider, (provMap.get(row.provider) ?? 0) + Number(row.citation_count));
   }
-  const chartData = [...dateMap.entries()]
+
+  const providers = [...new Set(rows.map((r) => r.provider))].sort();
+
+  const chartData = [...dateProviderMap.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([date, values]) => ({ date, ...values }));
+    .map(([date, provMap]) => {
+      const total = [...provMap.values()].reduce((s, v) => s + v, 0);
+      const entry: Record<string, string | number> = { date };
+      for (const p of providers) {
+        entry[p] = total > 0 ? Math.round(((provMap.get(p) ?? 0) / total) * 100 * 10) / 10 : 0;
+      }
+      return entry;
+    });
 
   const btnBase = {
     padding: "0.25rem 0.75rem",
@@ -118,7 +133,6 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
   return (
     <div>
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.75rem", alignItems: "flex-start", flexWrap: "wrap" }}>
-        {/* Mode toggle */}
         <div style={{ display: "flex", gap: "0.4rem" }}>
           <button
             onClick={() => switchMode("group")}
@@ -144,11 +158,10 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
           </button>
         </div>
 
-        {/* Group selector */}
         {mode === "group" && (
           <div style={{ display: "flex", gap: "0.4rem" }}>
             {OWNERSHIP_GROUPS.map((g) => {
-              const active = currentOwnership === g.key || (g.key === "all" && !currentOwnership);
+              const active = currentOwnership === g.key;
               return (
                 <button
                   key={g.key}
@@ -167,7 +180,6 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
           </div>
         )}
 
-        {/* Entity selector */}
         {mode === "entity" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
             {[

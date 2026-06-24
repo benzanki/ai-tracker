@@ -9,22 +9,19 @@ interface Props {
 }
 
 export async function ProviderShareServer({ filters, entityIds, psOwnership }: Props) {
-  const hasEntities = entityIds.length > 0;
-
-  const { data: rows } = await supabase.rpc("provider_citation_share", {
-    p_vertical: filters.vertical ?? null,
-    p_tag: filters.tag ?? null,
-    p_entity_ids: hasEntities ? entityIds : null,
-    p_ownership: hasEntities ? null : (psOwnership || null),
-    p_date_from: filters.dateFrom ?? null,
-    p_date_to: filters.dateTo ?? null,
-  });
-
-  const { data: entities } = await supabase
-    .from("entities")
-    .select("id, label, ownership")
-    .order("ownership")
-    .order("label");
+  const [{ data: rows }, { data: entities }] = await Promise.all([
+    supabase.rpc("provider_citation_detail", {
+      p_vertical: filters.vertical ?? null,
+      p_tag: filters.tag ?? null,
+      p_date_from: filters.dateFrom ?? null,
+      p_date_to: filters.dateTo ?? null,
+    }),
+    supabase
+      .from("entities")
+      .select("id, label, ownership")
+      .order("ownership")
+      .order("label"),
+  ]);
 
   const entityList = (entities ?? []).map((e: { id: string; label: string; ownership: string }) => ({
     entity_id: e.id,
