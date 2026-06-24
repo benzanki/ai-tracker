@@ -4,11 +4,9 @@ import type { Filters } from "../lib/queries";
 
 interface Props {
   filters: Filters;
-  entityIds: string[];
-  psOwnership: string;
 }
 
-export async function ProviderShareServer({ filters, entityIds, psOwnership }: Props) {
+export async function ProviderShareServer({ filters }: Props) {
   const [{ data: rows }, { data: entities }] = await Promise.all([
     supabase.rpc("provider_citation_detail", {
       p_vertical: filters.vertical ?? null,
@@ -33,8 +31,6 @@ export async function ProviderShareServer({ filters, entityIds, psOwnership }: P
     <ProviderShareChart
       rows={(rows as any[]) ?? []}
       entities={entityList}
-      currentEntityIds={entityIds}
-      currentOwnership={psOwnership}
     />
   );
 }

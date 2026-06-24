@@ -30,9 +30,6 @@ export default async function HomePage({
 }) {
   const params = await searchParams;
 
-  const psEntityIds = params.psEntityIds ? params.psEntityIds.split(",").filter(Boolean) : [];
-  const psOwnership = params.psOwnership ?? "";
-
   const [providers, verticals, entities, tags] = await Promise.all([
     getProviders(),
     getVerticals(),
@@ -73,7 +70,7 @@ export default async function HomePage({
           <InfoTooltip text="Of all citations for the selected entities or ownership group, what share came from each LLM provider on a given day. Switch between 'By ownership' to compare groups and 'By entity' to drill into specific sites." />
         </h2>
         <Suspense fallback={<p className="empty">Loading…</p>}>
-          <ProviderShareServer filters={filters} entityIds={psEntityIds} psOwnership={psOwnership} key={`ps-${psEntityIds.join()}-${psOwnership}`} />
+          <ProviderShareServer filters={filters} />
         </Suspense>
       </div>
 

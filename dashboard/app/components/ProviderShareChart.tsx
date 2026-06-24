@@ -29,8 +29,6 @@ interface Entity {
 interface Props {
   rows: Row[];
   entities: Entity[];
-  currentEntityIds: string[];
-  currentOwnership: string;
 }
 
 const PROVIDER_COLORS: Record<string, string> = {
@@ -46,10 +44,12 @@ const OWNERSHIP_GROUPS = [
   { key: "competitor", label: "Competitors" },
 ];
 
-export function ProviderShareChart({ rows, entities, currentEntityIds, currentOwnership }: Props) {
+export function ProviderShareChart({ rows, entities }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("psMode") === "entity" ? "entity" : "group";
+  const currentEntityIds = (searchParams.get("psEntityIds") ?? "").split(",").filter(Boolean);
+  const currentOwnership = searchParams.get("psOwnership") ?? "";
 
   const ownedEntities = entities.filter((e) => e.ownership === "owned");
   const competitorEntities = entities.filter((e) => e.ownership === "competitor");
