@@ -99,8 +99,9 @@ export function CitationRateChart({ rows }: Props) {
               <div key={group} style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap" }}>
                 <span style={{ fontSize: 11, color: "var(--color-text-muted)", minWidth: 72 }}>{group}</span>
                 {entities.map((label) => {
-                  const i = allEntities.indexOf(label);
-                  const active = selectedEntities.includes(label);
+                  const selectionIdx = selectedEntities.indexOf(label);
+                  const active = selectionIdx !== -1;
+                  const color = active ? COLORS[selectionIdx % COLORS.length] : undefined;
                   return (
                     <button
                       key={label}
@@ -108,10 +109,10 @@ export function CitationRateChart({ rows }: Props) {
                       style={{
                         padding: "0.2rem 0.6rem",
                         fontSize: 11,
-                        border: `1px solid ${active ? COLORS[i % COLORS.length] : "var(--color-border)"}`,
+                        border: `1px solid ${active ? color : "var(--color-border)"}`,
                         borderRadius: 3,
                         cursor: "pointer",
-                        background: active ? COLORS[i % COLORS.length] : "var(--color-surface)",
+                        background: active ? color : "var(--color-surface)",
                         color: active ? "#fff" : "var(--color-text-muted)",
                       }}
                     >
@@ -136,20 +137,17 @@ export function CitationRateChart({ rows }: Props) {
           />
           <Tooltip formatter={(v) => `${v}%`} />
           <Legend wrapperStyle={{ fontSize: 12 }} />
-          {selectedEntities.map((label, i) => {
-            const colorIdx = allEntities.indexOf(label);
-            return (
-              <Line
-                key={label}
-                type="monotone"
-                dataKey={label}
-                stroke={COLORS[colorIdx % COLORS.length]}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-              />
-            );
-          })}
+          {selectedEntities.map((label, i) => (
+            <Line
+              key={label}
+              type="monotone"
+              dataKey={label}
+              stroke={COLORS[i % COLORS.length]}
+              strokeWidth={2}
+              dot={{ r: 3 }}
+              activeDot={{ r: 5 }}
+            />
+          ))}
         </LineChart>
       </ResponsiveContainer>
     </div>
