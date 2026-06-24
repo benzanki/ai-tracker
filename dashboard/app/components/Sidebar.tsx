@@ -17,22 +17,35 @@ export function Sidebar() {
   const [active, setActive] = useState<string>("");
 
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
+    const intersectionObservers: IntersectionObserver[] = [];
+    const observedIds = new Set<string>();
 
-    SECTIONS.forEach(({ id }) => {
+    function observe(id: string) {
+      if (observedIds.has(id)) return;
       const el = document.getElementById(id);
       if (!el) return;
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActive(id);
-        },
+      observedIds.add(id);
+      const io = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActive(id); },
         { rootMargin: "-20% 0px -70% 0px" }
       );
-      observer.observe(el);
-      observers.push(observer);
-    });
+      io.observe(el);
+      intersectionObservers.push(io);
+    }
 
-    return () => observers.forEach((o) => o.disconnect());
+    // Observe any sections already in the DOM
+    SECTIONS.forEach(({ id }) => observe(id));
+
+    // Watch for sections added later (inside Suspense boundaries)
+    const mo = new MutationObserver(() => {
+      SECTIONS.forEach(({ id }) => observe(id));
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      intersectionObservers.forEach((o) => o.disconnect());
+      mo.disconnect();
+    };
   }, []);
 
   return (
