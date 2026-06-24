@@ -4,7 +4,7 @@ export interface Filters {
   provider?: string;
   vertical?: string;
   tag?: string;
-  ownership?: "owned" | "competitor";
+  ownership?: "owned" | "competitor" | "tracked" | "untracked";
   type?: "lender" | "aggregator" | "other";
   entityId?: string;
   dateFrom?: string;
@@ -160,6 +160,23 @@ export async function getVerticals() {
     .order("vertical");
   if (error) throw error;
   return [...new Set((data ?? []).map((r: { vertical: string }) => r.vertical))];
+}
+
+export async function getUntrackedCitations(filters: Filters) {
+  const { data, error } = await supabase.rpc("untracked_citations", {
+    p_provider: filters.provider ?? null,
+    p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
+    p_date_from: filters.dateFrom ?? null,
+    p_date_to: filters.dateTo ?? null,
+  });
+  if (error) throw error;
+  return data as Array<{
+    domain: string;
+    cite_count: number;
+    total_responses: number;
+    citation_rate: number;
+  }>;
 }
 
 export async function getTags() {

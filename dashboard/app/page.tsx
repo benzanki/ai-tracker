@@ -7,6 +7,7 @@ import { PageCitationsView } from "./components/PageCitationsView";
 import { TrendCharts } from "./components/TrendCharts";
 import { FiltersBar } from "./components/FiltersBar";
 import { InfoTooltip } from "./components/InfoTooltip";
+import { UntrackedCitations } from "./components/UntrackedCitations";
 import { getProviders, getVerticals, getEntities, getTags } from "./lib/queries";
 
 interface SearchParams {
@@ -107,6 +108,16 @@ export default async function HomePage({
         </h2>
         <Suspense fallback={<p className="empty">Loading…</p>}>
           <TypeShareView filters={filters} />
+        </Suspense>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">
+          Untracked domains
+          <InfoTooltip text="Domains Claude cited that are not in your entity watchlist. Use this to spot competitors or authoritative sources you may want to add for monitoring." />
+        </h2>
+        <Suspense fallback={<p className="empty">Loading…</p>}>
+          <UntrackedCitations filters={filters} />
         </Suspense>
       </div>
     </>

@@ -84,6 +84,8 @@ export function FiltersBar({ providers, verticals, tags, entities, current }: Pr
           <option value="">All</option>
           <option value="owned">Owned</option>
           <option value="competitor">Competitor</option>
+          <option value="tracked">Tracked (owned + competitor)</option>
+          <option value="untracked">Untracked</option>
         </select>
       </label>
 
