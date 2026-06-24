@@ -48,7 +48,7 @@ export function CitationRateChart({ data, entities }: Props) {
           tick={{ fontSize: 11, fill: "var(--color-text-muted)" }}
           domain={[0, 100]}
         />
-        <Tooltip formatter={(v: number) => `${v}%`} />
+        <Tooltip formatter={(v) => `${v}%`} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
         {entities.map((entity, i) => (
           <Line

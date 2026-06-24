@@ -40,7 +40,7 @@ export function TypeShareChart({ data }: Props) {
           tick={{ fontSize: 11, fill: "var(--color-text-muted)" }}
           domain={[0, 100]}
         />
-        <Tooltip formatter={(v: number) => `${v}%`} />
+        <Tooltip formatter={(v) => `${v}%`} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
         <Bar dataKey="aggregator" stackId="a" fill="#c1604a" name="Aggregator" />
         <Bar dataKey="lender" stackId="a" fill="#4a7fc1" name="Lender" />
