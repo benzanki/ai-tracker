@@ -8,6 +8,7 @@ import { TrendCharts } from "./components/TrendCharts";
 import { FiltersBar } from "./components/FiltersBar";
 import { InfoTooltip } from "./components/InfoTooltip";
 import { UntrackedCitations } from "./components/UntrackedCitations";
+import { ProviderShareServer } from "./components/ProviderShareServer";
 import { getProviders, getVerticals, getEntities, getTags } from "./lib/queries";
 
 interface SearchParams {
@@ -28,6 +29,9 @@ export default async function HomePage({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
+
+  const psEntityIds = params.psEntityIds ? params.psEntityIds.split(",").filter(Boolean) : [];
+  const psOwnership = params.psOwnership ?? "";
 
   const [providers, verticals, entities, tags] = await Promise.all([
     getProviders(),
@@ -108,6 +112,16 @@ export default async function HomePage({
         </h2>
         <Suspense fallback={<p className="empty">Loading…</p>}>
           <TypeShareView filters={filters} />
+        </Suspense>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">
+          Citation share by LLM provider
+          <InfoTooltip text="Of all citations for the selected entities or ownership group, what share came from each LLM provider on a given day. Switch between 'By ownership' to compare groups and 'By entity' to drill into specific sites." />
+        </h2>
+        <Suspense fallback={<p className="empty">Loading…</p>}>
+          <ProviderShareServer filters={filters} entityIds={psEntityIds} psOwnership={psOwnership} />
         </Suspense>
       </div>
 
