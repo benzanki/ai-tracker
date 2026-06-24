@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useCallback } from "react";
 
 interface Props {
   providers: string[];
@@ -14,8 +14,6 @@ interface Props {
 export function FiltersBar({ providers, verticals, tags, entities, current }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
-
   const update = useCallback(
     (key: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -24,9 +22,7 @@ export function FiltersBar({ providers, verticals, tags, entities, current }: Pr
       } else {
         params.delete(key);
       }
-      startTransition(() => {
-        router.replace(`?${params.toString()}`, { scroll: false });
-      });
+      router.push(`?${params.toString()}`);
     },
     [router, searchParams]
   );
