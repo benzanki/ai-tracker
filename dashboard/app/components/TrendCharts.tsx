@@ -1,6 +1,7 @@
 import { supabase } from "../lib/supabase";
 import { CitationRateChart } from "./CitationRateChart";
 import { TypeShareChart } from "./TypeShareChart";
+import { InfoTooltip } from "./InfoTooltip";
 import type { Filters } from "../lib/queries";
 
 interface Props {
@@ -41,11 +42,17 @@ export async function TrendCharts({ filters }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
       <div className="section">
-        <h2 className="section-title">Citation rate over time</h2>
+        <h2 className="section-title">
+          Citation rate over time
+          <InfoTooltip text="Select any entities and a metric to plot trends over time. Citation rate = cited as a source. Mention rate = named in prose. Mentioned & cited = both. Toggle entities using the buttons — colours are assigned in selection order." />
+        </h2>
         <CitationRateChart rows={(citationRows as any[]) ?? []} />
       </div>
       <div className="section">
-        <h2 className="section-title">Lender vs aggregator citation share</h2>
+        <h2 className="section-title">
+          Lender vs aggregator citation share
+          <InfoTooltip text="Stacked bar showing what share of all tracked-entity citations goes to lenders vs aggregators each day. Helps answer: is Claude increasingly favouring comparison sites over direct lenders?" />
+        </h2>
         <TypeShareChart data={typeChartData} />
       </div>
     </div>
