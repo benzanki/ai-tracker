@@ -44,9 +44,9 @@ export function TypeShareChart({ data, ownedLabels }: Props) {
         />
         <Tooltip formatter={(v) => `${Number(v).toFixed(1)}%`} />
         <Legend wrapperStyle={{ fontSize: 12 }} />
-        <Bar dataKey="aggregator" stackId="a" fill="#e0d8cc" name="Aggregator" />
-        <Bar dataKey="lender"     stackId="a" fill="#c8bfb4" name="Lender" />
-        <Bar dataKey="other"      stackId="a" fill="#b8b0a6" name="Other" />
+        <Bar dataKey="aggregator" stackId="a" fill="#c1604a" name="Aggregator" />
+        <Bar dataKey="lender"     stackId="a" fill="#4a7fc1" name="Lender" />
+        <Bar dataKey="other"      stackId="a" fill="#c1a84a" name="Other" />
         {ownedLabels.map((label, i) => (
           <Line
             key={label}
@@ -55,7 +55,7 @@ export function TypeShareChart({ data, ownedLabels }: Props) {
             stroke={OWNED_COLORS[i % OWNED_COLORS.length]}
             strokeWidth={2}
             dot={false}
-            name={`${label} (citation rate)`}
+            name={label}
           />
         ))}
       </ComposedChart>
