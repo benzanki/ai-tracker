@@ -41,14 +41,14 @@ export async function TrendCharts({ filters }: Props) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-      <div className="section">
+      <div className="section" id="citation-rate">
         <h2 className="section-title">
           Citation rate over time
           <InfoTooltip text="Citation rate = % of prompts where the entity was cited as a source. Mention rate = % where it was named in the answer content. Mentioned & cited = % where both occurred." />
         </h2>
         <CitationRateChart rows={(citationRows as any[]) ?? []} />
       </div>
-      <div className="section">
+      <div className="section" id="type-share">
         <h2 className="section-title">
           Lender vs aggregator citation share
           <InfoTooltip text="Share of all tracked-entity citations going to lenders vs aggregators, by day." />

@@ -143,3 +143,19 @@ input[type="date"] {
   text-align: center;
   color: var(--color-text-muted);
 }
+
+.sidebar-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 0 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+@media (max-width: 768px) {
+  .sidebar-nav {
+    display: none;
+  }
+}
