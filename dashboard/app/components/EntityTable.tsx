@@ -1,8 +1,6 @@
-import { getEntityMetrics, type Filters } from "../lib/queries";
+"use client";
 
-interface Props {
-  filters: Filters;
-}
+import { useState } from "react";
 
 interface EntityRow {
   entity_id: string;
@@ -22,11 +20,50 @@ interface EntityRow {
   avg_position: number | null;
 }
 
-export async function EntityTable({ filters }: Props) {
-  const data = (await getEntityMetrics(filters)) as EntityRow[];
+type SortKey = keyof EntityRow;
+
+interface Props {
+  data: EntityRow[];
+}
+
+export function EntityTable({ data }: Props) {
+  const [sortKey, setSortKey] = useState<SortKey>("citation_rate");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   if (!data || data.length === 0) {
     return <p className="empty">No data yet. Run the batch to populate.</p>;
+  }
+
+  function handleSort(key: SortKey) {
+    if (key === sortKey) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("desc");
+    }
+  }
+
+  const sorted = [...data].sort((a, b) => {
+    const av = a[sortKey] ?? (sortDir === "asc" ? Infinity : -Infinity);
+    const bv = b[sortKey] ?? (sortDir === "asc" ? Infinity : -Infinity);
+    if (av < bv) return sortDir === "asc" ? -1 : 1;
+    if (av > bv) return sortDir === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  function Th({ label, col }: { label: string; col: SortKey }) {
+    const active = sortKey === col;
+    return (
+      <th
+        onClick={() => handleSort(col)}
+        style={{ cursor: "pointer", userSelect: "none", whiteSpace: "nowrap" }}
+      >
+        {label}{" "}
+        <span style={{ color: active ? "var(--color-accent)" : "var(--color-border)" }}>
+          {active ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
+        </span>
+      </th>
+    );
   }
 
   return (
@@ -34,20 +71,20 @@ export async function EntityTable({ filters }: Props) {
       <table>
         <thead>
           <tr>
-            <th>Entity</th>
-            <th>Ownership</th>
-            <th>Type</th>
-            <th>Responses</th>
-            <th>Citation rate</th>
-            <th>Mention rate</th>
-            <th>Mentioned &amp; cited</th>
-            <th>Share (tracked)</th>
-            <th>Share (all)</th>
-            <th>Avg position</th>
+            <Th label="Entity" col="label" />
+            <Th label="Ownership" col="ownership" />
+            <Th label="Type" col="type" />
+            <Th label="Responses" col="total_responses" />
+            <Th label="Citation rate" col="citation_rate" />
+            <Th label="Mention rate" col="mention_rate" />
+            <Th label="Mentioned & cited" col="mentioned_and_cited_rate" />
+            <Th label="Share (tracked)" col="citation_share_tracked" />
+            <Th label="Share (all)" col="citation_share_all" />
+            <Th label="Avg position" col="avg_position" />
           </tr>
         </thead>
         <tbody>
-          {data.map((row) => (
+          {sorted.map((row) => (
             <tr key={row.entity_id}>
               <td>
                 <strong>{row.label}</strong>

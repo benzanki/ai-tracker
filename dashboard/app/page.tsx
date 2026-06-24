@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { EntityTable } from "./components/EntityTable";
+import { EntityTableServer } from "./components/EntityTableServer";
 import { PortfolioView } from "./components/PortfolioView";
 import { GapAnalysis } from "./components/GapAnalysis";
 import { TypeShareView } from "./components/TypeShareView";
@@ -62,7 +62,7 @@ export default async function HomePage({
       <div className="section">
         <h2 className="section-title">Entity metrics</h2>
         <Suspense fallback={<p className="empty">Loading…</p>}>
-          <EntityTable filters={filters} />
+          <EntityTableServer filters={filters} />
         </Suspense>
       </div>
 
