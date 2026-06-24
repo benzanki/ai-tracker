@@ -53,13 +53,15 @@ export default async function HomePage({
 
   return (
     <>
-      <FiltersBar
-        providers={providers as string[]}
-        verticals={verticals as string[]}
-        tags={tags as string[]}
-        entities={entities as Array<{ id: string; label: string; ownership: string }>}
-        current={params}
-      />
+      <Suspense fallback={null}>
+        <FiltersBar
+          providers={providers as string[]}
+          verticals={verticals as string[]}
+          tags={tags as string[]}
+          entities={entities as Array<{ id: string; label: string; ownership: string }>}
+          current={params}
+        />
+      </Suspense>
 
       <Suspense fallback={<p className="empty">Loading charts…</p>}>
         <TrendCharts filters={filters} />
@@ -71,7 +73,7 @@ export default async function HomePage({
           <InfoTooltip text="Of all citations for the selected entities or ownership group, what share came from each LLM provider on a given day. Switch between 'By ownership' to compare groups and 'By entity' to drill into specific sites." />
         </h2>
         <Suspense fallback={<p className="empty">Loading…</p>}>
-          <ProviderShareServer filters={filters} entityIds={psEntityIds} psOwnership={psOwnership} />
+          <ProviderShareServer filters={filters} entityIds={psEntityIds} psOwnership={psOwnership} key={`ps-${psEntityIds.join()}-${psOwnership}`} />
         </Suspense>
       </div>
 

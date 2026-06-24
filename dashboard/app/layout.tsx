@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,8 +18,8 @@ export default function RootLayout({
         <header>
           <nav>
             <strong>AI Tracker</strong>
-            <a href="/" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Dashboard</a>
-            <a href="/prompts" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Prompts</a>
+            <Link href="/" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Dashboard</Link>
+            <Link href="/prompts" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Prompts</Link>
           </nav>
         </header>
         <main>{children}</main>
