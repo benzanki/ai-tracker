@@ -49,7 +49,7 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const mode = currentEntityIds.length > 0 ? "entity" : "group";
+  const mode = (searchParams.get("psMode") === "entity") ? "entity" : "group";
   const providers = [...new Set(rows.map((r) => r.provider))].sort();
   const ownedEntities = entities.filter((e) => e.ownership === "owned");
   const competitorEntities = entities.filter((e) => e.ownership === "competitor");
@@ -65,6 +65,7 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
   function toggleEntity(id: string) {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("psOwnership");
+    params.set("psMode", "entity");
     const next = currentEntityIds.includes(id)
       ? currentEntityIds.filter((e) => e !== id)
       : [...currentEntityIds, id];
@@ -80,6 +81,11 @@ export function ProviderShareChart({ rows, entities, currentEntityIds, currentOw
     const params = new URLSearchParams(searchParams.toString());
     params.delete("psEntityIds");
     params.delete("psOwnership");
+    if (newMode === "entity") {
+      params.set("psMode", "entity");
+    } else {
+      params.delete("psMode");
+    }
     router.replace(`?${params.toString()}`, { scroll: false });
   }
 
