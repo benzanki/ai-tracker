@@ -29,6 +29,7 @@ interface Entity {
 interface Props {
   rows: Row[];
   entities: Entity[];
+  preselectedEntityId?: string;
 }
 
 const PROVIDER_COLORS: Record<string, string> = {
@@ -44,10 +45,12 @@ const OWNERSHIP_GROUPS = [
   { key: "competitor", label: "Competitors" },
 ];
 
-export function ProviderShareChart({ rows, entities }: Props) {
-  const [mode, setMode] = useState<"group" | "entity">("group");
+export function ProviderShareChart({ rows, entities, preselectedEntityId }: Props) {
+  const [mode, setMode] = useState<"group" | "entity">(preselectedEntityId ? "entity" : "group");
   const [currentOwnership, setCurrentOwnership] = useState("");
-  const [currentEntityIds, setCurrentEntityIds] = useState<string[]>([]);
+  const [currentEntityIds, setCurrentEntityIds] = useState<string[]>(
+    preselectedEntityId ? [preselectedEntityId] : []
+  );
 
   const ownedEntities = entities.filter((e) => e.ownership === "owned");
   const competitorEntities = entities.filter((e) => e.ownership === "competitor");

@@ -29,8 +29,10 @@ export async function ProviderShareServer({ filters }: Props) {
 
   return (
     <ProviderShareChart
+      key={filters.entityId ?? "all"}
       rows={(rows as any[]) ?? []}
       entities={entityList}
+      preselectedEntityId={filters.entityId}
     />
   );
 }

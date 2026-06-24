@@ -63,7 +63,15 @@ export async function TrendCharts({ filters }: Props) {
           Citation rate over time
           <InfoTooltip text="Citation rate = % of prompts where the entity was cited as a source. Mention rate = % where it was named in the answer content. Mentioned & cited = % where both occurred." />
         </h2>
-        <CitationRateChart rows={(citationRows as any[]) ?? []} />
+        <CitationRateChart
+          key={filters.entityId ?? "all"}
+          rows={(citationRows as any[]) ?? []}
+          preselectedLabel={
+            filters.entityId
+              ? (citationRows as any[])?.find((r: any) => r.entity_id === filters.entityId)?.label
+              : undefined
+          }
+        />
       </div>
       <div className="section" id="type-share">
         <h2 className="section-title">

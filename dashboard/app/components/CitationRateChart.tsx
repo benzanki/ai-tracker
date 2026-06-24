@@ -23,6 +23,7 @@ interface EntityRow {
 
 interface Props {
   rows: EntityRow[];
+  preselectedLabel?: string;
 }
 
 const COLORS = [
@@ -38,10 +39,12 @@ const METRICS = [
 
 type MetricKey = (typeof METRICS)[number]["key"];
 
-export function CitationRateChart({ rows }: Props) {
+export function CitationRateChart({ rows, preselectedLabel }: Props) {
   const allEntities = [...new Set(rows.map((r) => r.label))].sort();
-  const [selectedEntities, setSelectedEntities] = useState<string[]>(
-    allEntities.filter((_, i) => i < 5) // default to first 5
+  const [selectedEntities, setSelectedEntities] = useState<string[]>(() =>
+    preselectedLabel && allEntities.includes(preselectedLabel)
+      ? [preselectedLabel]
+      : allEntities.filter((_, i) => i < 5)
   );
   const [metric, setMetric] = useState<MetricKey>("citation_rate");
 
