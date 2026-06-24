@@ -12,14 +12,15 @@ export async function TrendCharts({ filters }: Props) {
   const { data: citationRows } = await supabase.rpc("entity_metrics_by_day", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });
 
-  // Fetch type share over time
   const { data: typeRows } = await supabase.rpc("type_share_over_time", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
+    p_tag: filters.tag ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });

@@ -13,10 +13,12 @@ interface CannibRow {
 }
 
 export async function PortfolioView({ filters }: Props) {
-  const [coverage, cannibalisation] = await Promise.all([
+  const [coverageResult, cannibalisation] = await Promise.all([
     getPortfolioCoverage(filters),
     getCannibalisation(filters),
   ]);
+
+  const coverage = Array.isArray(coverageResult) ? coverageResult[0] : coverageResult;
 
   const cannibRows = cannibalisation as CannibRow[];
 
