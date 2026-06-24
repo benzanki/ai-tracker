@@ -2,6 +2,63 @@
 -- Run these in the Supabase SQL editor or add as a migration (003_functions.sql).
 
 -- ============================================================
+-- entity_metrics_by_day
+-- Citation rate per entity per day, for trend charts.
+-- ============================================================
+create or replace function entity_metrics_by_day(
+  p_provider text default null,
+  p_vertical text default null,
+  p_date_from timestamptz default null,
+  p_date_to timestamptz default null
+)
+returns table (
+  date text,
+  entity_id uuid,
+  label text,
+  ownership text,
+  type text,
+  total_responses bigint,
+  cited_count bigint,
+  citation_rate numeric
+)
+language sql stable as $$
+  with daily_responses as (
+    select
+      r.id,
+      r.created_at::date as response_date,
+      r.prompt_id
+    from responses r
+    join prompts p on p.id = r.prompt_id
+    where (p_provider is null or r.provider = p_provider)
+      and (p_vertical is null or p.vertical = p_vertical)
+      and (p_date_from is null or r.created_at >= p_date_from)
+      and (p_date_to is null or r.created_at <= p_date_to)
+  ),
+  daily_totals as (
+    select response_date, count(*) as total
+    from daily_responses
+    group by response_date
+  )
+  select
+    dr.response_date::text as date,
+    e.id as entity_id,
+    e.label,
+    e.ownership,
+    e.type,
+    dt.total as total_responses,
+    count(distinct c.response_id) as cited_count,
+    round(count(distinct c.response_id)::numeric / nullif(dt.total, 0) * 100, 2) as citation_rate
+  from entities e
+  cross join daily_totals dt
+  cross join (select distinct response_date from daily_responses) dates
+  left join daily_responses dr on dr.response_date = dates.response_date
+  left join citations c on c.entity_id = e.id and c.response_id = dr.id
+  where dr.response_date = dates.response_date
+  group by dr.response_date, e.id, e.label, e.ownership, e.type, dt.total
+  order by dr.response_date, e.label;
+$$;
+
+-- ============================================================
 -- entity_metrics
 -- Returns citation rate, mention rate, citation share, avg position,
 -- and mentioned-and-cited rate per entity.

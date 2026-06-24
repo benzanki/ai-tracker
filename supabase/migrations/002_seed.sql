@@ -186,19 +186,37 @@ insert into entities (domain, brand_variants, ownership, type, label) values
 );
 
 -- ============================================================
--- STARTER PROMPTS
+-- PROMPTS
 -- ============================================================
 insert into prompts (text, vertical, tags) values
-  ('What are the best home loan rates in Australia right now?', 'home_loans', array['rates', 'comparison']),
-  ('Which Australian lender offers the lowest variable home loan rate?', 'home_loans', array['variable', 'rates']),
+  -- Home loans: comparison/rates (aggregators strong here)
+  ('What are the lowest home loan interest rates in Australia right now?', 'home_loans', array['rates', 'comparison']),
+  ('Which Australian lenders have the best variable home loan rates?', 'home_loans', array['variable', 'rates', 'comparison']),
   ('What is the best home loan for first home buyers in Australia?', 'home_loans', array['first_home_buyer']),
-  ('How do I compare home loans in Australia?', 'home_loans', array['comparison', 'how_to']),
+
+  -- Home loans: features
   ('What are the best offset account home loans in Australia?', 'home_loans', array['offset', 'features']),
-  ('Which banks have the best home loan rates in Australia?', 'home_loans', array['banks', 'rates']),
-  ('What are the best car loan rates in Australia?', 'car_loans', array['rates', 'comparison']),
-  ('How do I get a car loan in Australia with bad credit?', 'car_loans', array['bad_credit']),
-  ('What are the best personal loan rates for a car in Australia?', 'car_loans', array['personal_loan']),
-  ('What credit score do I need for a car loan in Australia?', 'car_loans', array['credit_score', 'eligibility']),
-  ('Which Australian lender offers the lowest car loan interest rate?', 'car_loans', array['rates', 'comparison']),
-  ('What is the best way to finance a used car in Australia?', 'car_loans', array['used_car', 'comparison']),
-  ('Can I get a car loan with no deposit in Australia?', 'car_loans', array['no_deposit', 'eligibility']);
+  ('Should I fix my home loan rate in Australia?', 'home_loans', array['fixed', 'variable', 'explainer']),
+
+  -- Home loans: evergreen/educational (loans.com.au article territory)
+  ('How does LVR affect your home loan in Australia?', 'home_loans', array['lvr', 'explainer']),
+  ('What is lenders mortgage insurance in Australia and how do I avoid it?', 'home_loans', array['lmi', 'explainer']),
+  ('How do I refinance my home loan in Australia?', 'home_loans', array['refinance', 'how_to']),
+
+  -- Home loans: non-bank / brand-direct
+  ('What are the best non-bank home loan lenders in Australia?', 'home_loans', array['non_bank', 'lenders']),
+  ('Is loans.com.au a good home loan lender in Australia?', 'home_loans', array['brand_direct', 'loans_com_au']),
+
+  -- Car loans: comparison/rates
+  ('What are the lowest car loan interest rates in Australia right now?', 'car_loans', array['rates', 'comparison']),
+  ('Which lender has the best car loan in Australia?', 'car_loans', array['rates', 'comparison']),
+
+  -- Car loans: evergreen/educational
+  ('What is the difference between a secured and unsecured car loan in Australia?', 'car_loans', array['secured', 'unsecured', 'explainer']),
+  ('How do I get a car loan in Australia with bad credit?', 'car_loans', array['bad_credit', 'eligibility']),
+  ('What is a good interest rate for a car loan in Australia?', 'car_loans', array['rates', 'explainer']),
+  ('Is it better to get a car loan from a bank or a car dealer in Australia?', 'car_loans', array['comparison', 'dealer_finance']),
+  ('Can I get a car loan with no deposit in Australia?', 'car_loans', array['no_deposit', 'eligibility']),
+  ('How do I finance a used car in Australia?', 'car_loans', array['used_car', 'how_to']),
+  ('What credit score do I need to get approved for a car loan in Australia?', 'car_loans', array['credit_score', 'eligibility']),
+  ('How long should my car loan term be in Australia?', 'car_loans', array['loan_term', 'explainer']);

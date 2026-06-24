@@ -4,6 +4,7 @@ import { PortfolioView } from "./components/PortfolioView";
 import { GapAnalysis } from "./components/GapAnalysis";
 import { TypeShareView } from "./components/TypeShareView";
 import { PageCitationsView } from "./components/PageCitationsView";
+import { TrendCharts } from "./components/TrendCharts";
 import { FiltersBar } from "./components/FiltersBar";
 import { getProviders, getVerticals, getEntities } from "./lib/queries";
 
@@ -49,6 +50,10 @@ export default async function HomePage({
         entities={entities as Array<{ id: string; label: string; ownership: string }>}
         current={params}
       />
+
+      <Suspense fallback={<p className="empty">Loading charts…</p>}>
+        <TrendCharts filters={filters} />
+      </Suspense>
 
       <div className="section">
         <h2 className="section-title">Entity metrics</h2>
