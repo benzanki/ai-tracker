@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { InfoTooltip } from "./InfoTooltip";
 
 interface EntityRow {
   entity_id: string;
@@ -51,7 +52,7 @@ export function EntityTable({ data }: Props) {
     return 0;
   });
 
-  function Th({ label, col }: { label: string; col: SortKey }) {
+  function Th({ label, col, tip }: { label: string; col: SortKey; tip?: string }) {
     const active = sortKey === col;
     return (
       <th
@@ -62,6 +63,7 @@ export function EntityTable({ data }: Props) {
         <span style={{ color: active ? "var(--color-accent)" : "var(--color-border)" }}>
           {active ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
         </span>
+        {tip && <InfoTooltip text={tip} />}
       </th>
     );
   }
@@ -74,13 +76,13 @@ export function EntityTable({ data }: Props) {
             <Th label="Entity" col="label" />
             <Th label="Ownership" col="ownership" />
             <Th label="Type" col="type" />
-            <Th label="Responses" col="total_responses" />
-            <Th label="Citation rate" col="citation_rate" />
-            <Th label="Mention rate" col="mention_rate" />
-            <Th label="Mentioned & cited" col="mentioned_and_cited_rate" />
-            <Th label="Share (tracked)" col="citation_share_tracked" />
-            <Th label="Share (all)" col="citation_share_all" />
-            <Th label="Avg position" col="avg_position" />
+            <Th label="Responses" col="total_responses" tip="Total number of AI responses evaluated for this entity across the selected filters." />
+            <Th label="Citation rate" col="citation_rate" tip="% of responses where this entity was linked as a source in the AI's answer. The strongest signal — the AI actively pointed users to this site." />
+            <Th label="Mention rate" col="mention_rate" tip="% of responses where this entity was named in the answer content, whether or not it was linked. Includes brand mentions without a hyperlink." />
+            <Th label="Mentioned & cited" col="mentioned_and_cited_rate" tip="% of responses where this entity was both named in the answer AND linked as a source. The best possible outcome — named and linked." />
+            <Th label="Share (tracked)" col="citation_share_tracked" tip="This entity's citations as a % of all citations given to your 31 tracked entities combined. Shows how this site competes within your watchlist — e.g. 10% means 1 in 10 tracked citations went to this site." />
+            <Th label="Share (all)" col="citation_share_all" tip="This entity's citations as a % of every citation in the responses, including sites not in your watchlist. A truer picture of overall visibility — lower than Share (tracked) because untracked sites are included in the denominator." />
+            <Th label="Avg position" col="avg_position" tip="Average rank of this entity in the citation list when it appears. Position 1 means cited first. Lower is better." />
           </tr>
         </thead>
         <tbody>
