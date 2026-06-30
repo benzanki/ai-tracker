@@ -192,31 +192,41 @@ export async function getTags() {
 }
 
 // ----------------------------------------------------------------
-// Run summaries: recent runs with their AI-generated summary (if any)
+// Run summaries: recent days with their AI-generated summary (if any).
+// A single day's batch can produce multiple `runs` rows (one per
+// provider), so summaries are grouped and keyed by calendar date.
 // ----------------------------------------------------------------
 
-export async function getRecentRunSummaries(limit = 5) {
+export async function getRecentRunSummaries(dayLimit = 5) {
   const { data: runs, error: runsError } = await supabase
     .from("runs")
     .select("id, provider, started_at, finished_at, status")
     .order("started_at", { ascending: false })
-    .limit(limit);
+    .limit(dayLimit * 5); // enough rows to cover dayLimit distinct days across providers
   if (runsError) throw runsError;
   if (!runs || runs.length === 0) return [];
 
+  const dayMap = new Map<string, typeof runs>();
+  for (const run of runs) {
+    const date = run.started_at.slice(0, 10);
+    if (!dayMap.has(date)) dayMap.set(date, []);
+    dayMap.get(date)!.push(run);
+  }
+
+  const dates = [...dayMap.keys()].sort((a, b) => (a < b ? 1 : -1)).slice(0, dayLimit);
+
   const { data: summaries, error: summariesError } = await supabase
-    .from("run_summaries")
-    .select("run_id, summary_text, created_at")
-    .in("run_id", runs.map((r) => r.id));
+    .from("run_day_summaries")
+    .select("run_date, summary_text, created_at")
+    .in("run_date", dates);
   if (summariesError) throw summariesError;
 
-  const summaryByRunId = new Map(
-    (summaries ?? []).map((s) => [s.run_id, s])
-  );
+  const summaryByDate = new Map((summaries ?? []).map((s) => [s.run_date, s]));
 
-  return runs.map((run) => ({
-    ...run,
-    summary: summaryByRunId.get(run.id) ?? null,
+  return dates.map((date) => ({
+    date,
+    runs: dayMap.get(date)!,
+    summary: summaryByDate.get(date) ?? null,
   }));
 }
 

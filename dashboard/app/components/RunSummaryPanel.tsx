@@ -2,34 +2,41 @@
 
 import { useState } from "react";
 
-interface RunSummary {
+interface RunRow {
   id: string;
   provider: string;
   started_at: string;
   finished_at: string | null;
   status: string;
+}
+
+interface DaySummary {
+  date: string;
+  runs: RunRow[];
   summary: { summary_text: string; created_at: string } | null;
 }
 
 interface Props {
-  runs: RunSummary[];
+  days: DaySummary[];
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-AU", {
+function formatDate(dateStr: string) {
+  return new Date(`${dateStr}T00:00:00`).toLocaleDateString("en-AU", {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
 }
 
-export function RunSummaryPanel({ runs }: Props) {
-  const [selectedId, setSelectedId] = useState(runs[0]?.id ?? "");
+export function RunSummaryPanel({ days }: Props) {
+  const [selectedDate, setSelectedDate] = useState(days[0]?.date ?? "");
   const [expanded, setExpanded] = useState(true);
 
-  if (!runs || runs.length === 0) return null;
+  if (!days || days.length === 0) return null;
 
-  const selected = runs.find((r) => r.id === selectedId) ?? runs[0];
+  const selected = days.find((d) => d.date === selectedDate) ?? days[0];
+  const providers = [...new Set(selected.runs.map((r) => r.provider))];
+  const anyFailed = selected.runs.some((r) => r.status === "failed");
 
   return (
     <div className="section" id="run-summary">
@@ -69,12 +76,12 @@ export function RunSummaryPanel({ runs }: Props) {
               overflowX: "auto",
             }}
           >
-            {runs.map((run) => {
-              const isActive = run.id === selected.id;
+            {days.map((day) => {
+              const isActive = day.date === selected.date;
               return (
                 <button
-                  key={run.id}
-                  onClick={() => setSelectedId(run.id)}
+                  key={day.date}
+                  onClick={() => setSelectedDate(day.date)}
                   style={{
                     background: "none",
                     border: "none",
@@ -87,10 +94,7 @@ export function RunSummaryPanel({ runs }: Props) {
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {formatDate(run.started_at)}
-                  <span style={{ textTransform: "capitalize", marginLeft: 4 }}>
-                    ({run.provider})
-                  </span>
+                  {formatDate(day.date)}
                 </button>
               );
             })}
@@ -100,18 +104,25 @@ export function RunSummaryPanel({ runs }: Props) {
             <div
               style={{
                 display: "flex",
-                gap: "0.75rem",
+                gap: "0.5rem",
                 alignItems: "center",
                 marginBottom: "0.6rem",
                 fontSize: 12,
                 color: "var(--color-text-muted)",
+                flexWrap: "wrap",
               }}
             >
-              <span className={`badge badge-${selected.status === "complete" ? "owned" : "competitor"}`}>
-                {selected.status}
-              </span>
-              <span>{formatDate(selected.started_at)}</span>
-              <span style={{ textTransform: "capitalize" }}>{selected.provider}</span>
+              <span>{formatDate(selected.date)}</span>
+              {providers.map((p) => (
+                <span key={p} style={{ textTransform: "capitalize" }} className="badge badge-sm badge-competitor">
+                  {p}
+                </span>
+              ))}
+              {anyFailed && (
+                <span className="badge badge-sm badge-competitor" style={{ color: "var(--color-accent)" }}>
+                  partial failure
+                </span>
+              )}
             </div>
 
             {selected.summary ? (
@@ -120,8 +131,8 @@ export function RunSummaryPanel({ runs }: Props) {
               </p>
             ) : (
               <p style={{ fontSize: 13, color: "var(--color-text-muted)", fontStyle: "italic" }}>
-                No AI-generated summary for this run yet. Once summary generation is wired up,
-                this run-vs-previous-run comparison will appear here automatically.
+                No AI-generated summary for this day yet. Once summary generation is wired up,
+                this day-vs-previous-day comparison will appear here automatically.
               </p>
             )}
           </div>
