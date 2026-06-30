@@ -74,8 +74,6 @@ export function EntityTable({ data }: Props) {
         <thead>
           <tr>
             <Th label="Entity" col="label" />
-            <Th label="Ownership" col="ownership" />
-            <Th label="Type" col="type" />
             <Th label="Responses" col="total_responses" tip="Total number of AI responses evaluated for this entity across the selected filters." />
             <Th label="Citation rate" col="citation_rate" tip="% of responses where this entity was linked as a source in the AI's answer. The strongest signal — the AI actively pointed users to this site." />
             <Th label="Mention rate" col="mention_rate" tip="% of responses where this entity was named in the answer content, whether or not it was linked. Includes brand mentions without a hyperlink." />
@@ -89,18 +87,15 @@ export function EntityTable({ data }: Props) {
           {sorted.map((row) => (
             <tr key={row.entity_id}>
               <td>
-                <strong>{row.label}</strong>
+                <strong>{row.label}</strong>{" "}
+                <span className={`badge badge-${row.ownership}`}>
+                  {row.ownership}
+                </span>
                 <br />
                 <span style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
                   {row.domain}
                 </span>
               </td>
-              <td>
-                <span className={`badge badge-${row.ownership}`}>
-                  {row.ownership}
-                </span>
-              </td>
-              <td>{row.type}</td>
               <td>{row.total_responses}</td>
               <td>{row.citation_rate ?? 0}%</td>
               <td>{row.mention_rate ?? 0}%</td>

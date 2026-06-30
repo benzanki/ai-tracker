@@ -11,7 +11,7 @@ export function InfoTooltip({ text, placement = "top" }: Props) {
   const [visible, setVisible] = useState(false);
 
   return (
-    <span style={{ position: "relative", display: "inline-block", marginLeft: "0.4rem" }}>
+    <span style={{ position: "relative", display: "inline-block", marginLeft: "0.25rem" }}>
       <span
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
@@ -19,12 +19,12 @@ export function InfoTooltip({ text, placement = "top" }: Props) {
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: 16,
-          height: 16,
+          width: 12,
+          height: 12,
           borderRadius: "50%",
           background: "var(--color-border)",
           color: "var(--color-text-muted)",
-          fontSize: 10,
+          fontSize: 8,
           fontWeight: 700,
           cursor: "default",
           verticalAlign: "middle",
