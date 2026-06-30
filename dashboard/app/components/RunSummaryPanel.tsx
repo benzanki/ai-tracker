@@ -44,7 +44,7 @@ export function RunSummaryPanel({ days }: Props) {
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          gap: "0.5rem",
           cursor: "pointer",
         }}
         onClick={() => setExpanded((e) => !e)}
