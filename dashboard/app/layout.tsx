@@ -20,6 +20,7 @@ export default function RootLayout({
             <strong>AI Tracker</strong>
             <Link href="/" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Dashboard</Link>
             <Link href="/prompts" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>Prompts</Link>
+            <Link href="/ga4-traffic" style={{ color: "var(--color-text-muted)", textDecoration: "none", fontSize: "0.85rem" }}>GA4 traffic (mock-up)</Link>
           </nav>
         </header>
         <main>{children}</main>
