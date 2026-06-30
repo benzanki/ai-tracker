@@ -8,6 +8,7 @@ import { FiltersBar } from "./components/FiltersBar";
 import { InfoTooltip } from "./components/InfoTooltip";
 import { UntrackedCitations } from "./components/UntrackedCitations";
 import { ProviderShareServer } from "./components/ProviderShareServer";
+import { RunSummaryServer } from "./components/RunSummaryServer";
 import { Sidebar } from "./components/Sidebar";
 import { getProviders, getVerticals, getEntities, getTags } from "./lib/queries";
 
@@ -50,6 +51,10 @@ export default async function HomePage({
 
   return (
     <>
+      <Suspense fallback={null}>
+        <RunSummaryServer />
+      </Suspense>
+
       <Suspense fallback={null}>
         <FiltersBar
           providers={providers as string[]}

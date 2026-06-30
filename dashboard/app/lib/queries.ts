@@ -191,6 +191,35 @@ export async function getTags() {
   return [...new Set(all)].sort();
 }
 
+// ----------------------------------------------------------------
+// Run summaries: recent runs with their AI-generated summary (if any)
+// ----------------------------------------------------------------
+
+export async function getRecentRunSummaries(limit = 5) {
+  const { data: runs, error: runsError } = await supabase
+    .from("runs")
+    .select("id, provider, started_at, finished_at, status")
+    .order("started_at", { ascending: false })
+    .limit(limit);
+  if (runsError) throw runsError;
+  if (!runs || runs.length === 0) return [];
+
+  const { data: summaries, error: summariesError } = await supabase
+    .from("run_summaries")
+    .select("run_id, summary_text, created_at")
+    .in("run_id", runs.map((r) => r.id));
+  if (summariesError) throw summariesError;
+
+  const summaryByRunId = new Map(
+    (summaries ?? []).map((s) => [s.run_id, s])
+  );
+
+  return runs.map((run) => ({
+    ...run,
+    summary: summaryByRunId.get(run.id) ?? null,
+  }));
+}
+
 export async function getEntities(ownership?: string) {
   let q = supabase.from("entities").select("id, label, domain, ownership, type").order("label");
   if (ownership) q = q.eq("ownership", ownership);
