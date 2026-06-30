@@ -30,7 +30,7 @@ function formatDate(dateStr: string) {
 
 export function RunSummaryPanel({ days }: Props) {
   const [selectedDate, setSelectedDate] = useState(days[0]?.date ?? "");
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   if (!days || days.length === 0) return null;
 
@@ -39,7 +39,7 @@ export function RunSummaryPanel({ days }: Props) {
   const anyFailed = selected.runs.some((r) => r.status === "failed");
 
   return (
-    <div className="section" id="run-summary">
+    <div className="section" id="run-summary" style={{ marginBottom: "1rem" }}>
       <div
         style={{
           display: "flex",
@@ -49,10 +49,10 @@ export function RunSummaryPanel({ days }: Props) {
         }}
         onClick={() => setExpanded((e) => !e)}
       >
-        <h2 className="section-title" style={{ marginBottom: 0 }}>
+        <h2 className="section-title" style={{ marginBottom: 0, fontSize: "0.95rem" }}>
           Run summary
         </h2>
-        <span style={{ color: "var(--color-text-muted)", fontSize: 12 }}>
+        <span style={{ color: "var(--color-text-muted)", fontSize: 11 }}>
           {expanded ? "Hide ▲" : "Show ▼"}
         </span>
       </div>
@@ -60,7 +60,7 @@ export function RunSummaryPanel({ days }: Props) {
       {expanded && (
         <div
           style={{
-            marginTop: "0.75rem",
+            marginTop: "0.5rem",
             border: "1px solid var(--color-border)",
             borderRadius: 8,
             background: "var(--color-surface)",
@@ -71,7 +71,7 @@ export function RunSummaryPanel({ days }: Props) {
             style={{
               display: "flex",
               gap: "0.25rem",
-              padding: "0.6rem 0.75rem 0",
+              padding: "0.4rem 0.6rem 0",
               borderBottom: "1px solid var(--color-border)",
               overflowX: "auto",
             }}
@@ -86,8 +86,8 @@ export function RunSummaryPanel({ days }: Props) {
                     background: "none",
                     border: "none",
                     borderBottom: `2px solid ${isActive ? "var(--color-accent)" : "transparent"}`,
-                    padding: "0.4rem 0.6rem",
-                    fontSize: 12,
+                    padding: "0.3rem 0.5rem",
+                    fontSize: 11,
                     fontWeight: isActive ? 600 : 400,
                     color: isActive ? "var(--color-accent)" : "var(--color-text-muted)",
                     cursor: "pointer",
@@ -100,14 +100,14 @@ export function RunSummaryPanel({ days }: Props) {
             })}
           </div>
 
-          <div style={{ padding: "1rem 1.25rem" }}>
+          <div style={{ padding: "0.65rem 0.85rem" }}>
             <div
               style={{
                 display: "flex",
-                gap: "0.5rem",
+                gap: "0.4rem",
                 alignItems: "center",
-                marginBottom: "0.6rem",
-                fontSize: 12,
+                marginBottom: "0.4rem",
+                fontSize: 11,
                 color: "var(--color-text-muted)",
                 flexWrap: "wrap",
               }}
@@ -126,11 +126,11 @@ export function RunSummaryPanel({ days }: Props) {
             </div>
 
             {selected.summary ? (
-              <p style={{ fontSize: 13, lineHeight: 1.6, whiteSpace: "pre-line" }}>
+              <p style={{ fontSize: 12.5, lineHeight: 1.5, whiteSpace: "pre-line" }}>
                 {selected.summary.summary_text}
               </p>
             ) : (
-              <p style={{ fontSize: 13, color: "var(--color-text-muted)", fontStyle: "italic" }}>
+              <p style={{ fontSize: 12.5, color: "var(--color-text-muted)", fontStyle: "italic" }}>
                 No AI-generated summary for this day yet. Once summary generation is wired up,
                 this day-vs-previous-day comparison will appear here automatically.
               </p>
