@@ -97,6 +97,11 @@ input[type="date"] {
   letter-spacing: 0.04em;
 }
 
+.badge-sm {
+  padding: 0.1rem 0.2rem;
+  font-size: 8px;
+}
+
 .badge-owned {
   background: var(--color-accent-light);
   color: var(--color-accent);

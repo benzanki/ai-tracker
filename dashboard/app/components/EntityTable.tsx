@@ -87,13 +87,13 @@ export function EntityTable({ data }: Props) {
           {sorted.map((row) => (
             <tr key={row.entity_id}>
               <td>
-                <strong>{row.label}</strong>{" "}
-                <span className={`badge badge-${row.ownership}`}>
-                  {row.ownership}
-                </span>
+                <strong>{row.label}</strong>
                 <br />
                 <span style={{ fontSize: 11, color: "var(--color-text-muted)" }}>
                   {row.domain}
+                </span>{" "}
+                <span className={`badge badge-sm badge-${row.ownership}`}>
+                  {row.ownership}
                 </span>
               </td>
               <td>{row.total_responses}</td>
