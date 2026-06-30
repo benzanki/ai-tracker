@@ -63,7 +63,7 @@ export function EntityTable({ data }: Props) {
         <span style={{ color: active ? "var(--color-accent)" : "var(--color-border)" }}>
           {active ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
         </span>
-        {tip && <InfoTooltip text={tip} />}
+        {tip && <InfoTooltip text={tip} placement="bottom" />}
       </th>
     );
   }

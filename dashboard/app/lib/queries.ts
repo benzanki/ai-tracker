@@ -16,20 +16,25 @@ export interface Filters {
 // ----------------------------------------------------------------
 
 export async function getEntityMetrics(filters: Filters) {
-  // Base query: join responses → prompts for vertical filtering
-  // and citations / entity_mentions for metrics
-  let query = supabase.rpc("entity_metrics", {
+  // 'tracked' and 'untracked' are UI concepts — translate before hitting the DB.
+  // 'tracked' = pass null (all entities are tracked by definition in this function)
+  // 'untracked' = no entity rows exist for untracked sites, return empty
+  if (filters.ownership === "untracked") return [];
+
+  const p_ownership =
+    filters.ownership === "tracked" ? null : (filters.ownership ?? null);
+
+  const { data, error } = await supabase.rpc("entity_metrics", {
     p_provider: filters.provider ?? null,
     p_vertical: filters.vertical ?? null,
     p_tag: filters.tag ?? null,
-    p_ownership: filters.ownership ?? null,
+    p_ownership,
     p_type: filters.type ?? null,
     p_entity_id: filters.entityId ?? null,
     p_date_from: filters.dateFrom ?? null,
     p_date_to: filters.dateTo ?? null,
   });
 
-  const { data, error } = await query;
   if (error) throw error;
   return data;
 }

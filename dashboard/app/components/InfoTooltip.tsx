@@ -4,9 +4,10 @@ import { useState } from "react";
 
 interface Props {
   text: string;
+  placement?: "top" | "bottom";
 }
 
-export function InfoTooltip({ text }: Props) {
+export function InfoTooltip({ text, placement = "top" }: Props) {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -38,7 +39,9 @@ export function InfoTooltip({ text }: Props) {
             position: "absolute",
             left: "50%",
             transform: "translateX(-50%)",
-            bottom: "calc(100% + 6px)",
+            ...(placement === "top"
+              ? { bottom: "calc(100% + 6px)" }
+              : { top: "calc(100% + 6px)" }),
             background: "var(--color-text)",
             color: "var(--color-bg)",
             fontSize: 12,
@@ -55,11 +58,12 @@ export function InfoTooltip({ text }: Props) {
           <span
             style={{
               position: "absolute",
-              top: "100%",
               left: "50%",
               transform: "translateX(-50%)",
               border: "5px solid transparent",
-              borderTopColor: "var(--color-text)",
+              ...(placement === "top"
+                ? { top: "100%", borderTopColor: "var(--color-text)" }
+                : { bottom: "100%", borderBottomColor: "var(--color-text)" }),
             }}
           />
         </span>
