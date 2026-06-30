@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 
 const SECTIONS = [
-  { id: "run-summary",        label: "Run summary" },
   { id: "citation-rate",      label: "Citation rate over time" },
   { id: "type-share",         label: "Lender vs aggregator" },
   { id: "provider-share",     label: "Citation share by provider" },
